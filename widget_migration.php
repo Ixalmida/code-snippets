@@ -13,12 +13,16 @@ class Widgets extends Migration
     public function up()
     {
         Schema::create('widgets', function (Blueprint $table) {
+            // Add columns
             $table->increments('id');
             $table->string('name');
             $table->string('description');
             $table->integer('type_id')->unsigned()->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            // Add foreign keys
+            $table->foreign('type_id')->references('id')->on('widget_types')->onUpdate('cascade')->onDelete('set null');
         });
     }
 
@@ -29,6 +33,12 @@ class Widgets extends Migration
      */
     public function down()
     {
+        // Drop foreign keys
+        Schema::table('widgets', function (Blueprint $table) {
+            $table->dropForeign('widgets_type_id_foreign');
+        });
+
+        // Drop table
         Schema::drop('widgets');
     }
 }
