@@ -11,9 +11,12 @@ class WidgetController extends Controller
     /**
      * List widgets
      */
-    public function listWidgets()
+    public function index()
     {
-        // Return an array of widgets
-        return Widget::get()->toArray();
+        // Get widgets
+        $widgets = Widget::get();
+
+        // Return widgets as json
+        return response()->json($widgets);
     }
 }
