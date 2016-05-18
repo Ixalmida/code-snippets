@@ -13,10 +13,13 @@ class WidgetController extends Controller
      */
     public function index()
     {
-        // Get widgets
-        $widgets = Widget::get();
+        // Set the page title
+        $params['title'] = 'List of Widgets';
 
-        // Return widgets as json
-        return response()->json($widgets);
+        // Get widgets
+        $params['widgets'] = Widget::get();
+
+        // Return widgets list
+        return view('home.widgets', $params);
     }
 }
