@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Widget extends Model
 {
-    // Table
-    protected $table = 'puppies';
+    // Fillable fields
+    protected $fillable = [
+        'name',
+        'description',
+        'type_id',
+    ];
 }
