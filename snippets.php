@@ -102,3 +102,16 @@ public function getFile($filename)
     // Return the file
     return response()->file($path, ['Content-Type: ' . $mimetype . '; charset=utf-8']);
 }
+
+// Product variant usage
+public function usage()
+{
+    return $this->belongsToMany('App\Usage', 'variant_usage', 'variant_id', 'usage_id');
+    // Note: these extra parameters wouldn't be necessary if the 'variant_usage' table were named 'product_variant_usage'
+    // ...or if 'product_variant' were simply named 'variant'
+    // (i.e. - product_variants --> product_variant_usage --> usage)
+
+    // Also Note: the ID parameters are the connecting points in variant_usage
+    // (i.e. - product_variants --> {variant_id --> usage_id} --> usage)
+}
+
