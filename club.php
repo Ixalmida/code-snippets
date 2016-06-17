@@ -1,3 +1,5 @@
+<?php
+
 class Club extends Model
 {
     /**
