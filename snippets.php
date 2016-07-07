@@ -119,3 +119,8 @@ public function getFile($filename)
 // Redirect:
 return redirect()->back()->withInput();
 
+// Retrieve flashed input
+$first_name = old('first_name');
+
+// Blade:
+{{ old('first_name') }}
