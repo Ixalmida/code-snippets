@@ -119,7 +119,7 @@ public function getFile($filename)
 // Redirect:
 return redirect()->back()->withInput();
 
-// Retrieve flashed input
+// Controller:
 $first_name = old('first_name');
 
 // Blade:
