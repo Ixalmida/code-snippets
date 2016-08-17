@@ -1,0 +1,224 @@
+<?php
+/**
+ * Curl Request Class - provides essential cURL functionality
+ */
+class CurlRequest
+{
+    /**
+     * Get an access token
+     *
+     * @return void
+     */
+    public static function getToken($url, $params)
+    {
+        // Standard params
+        $query = http_build_query($params);
+
+        // Begin CURL
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+
+        // Execute CURL
+        $json = curl_exec($curl);
+
+        // Get HTTP status code
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // Close CURL
+        curl_close($curl);
+
+        // Handle errors
+        if (!$json) {
+            trigger_error('Request failed with HTTP code: ' . $code);
+            return false;
+        }
+
+        // Set response to session variable
+        $data = json_decode($json);
+
+        // Return the token
+        return $data->access_token;
+    }
+
+    /**
+     * HTTP GET
+     *
+     * @param string $url - the url to query
+     * @param string $token - the access token to use
+     * @return object - the response data
+     */
+    protected function getData($token, $url)
+    {
+        // Init CURL
+        $curl = curl_init($url);
+
+        // Set CURL options
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $token, 'Content-type: application/json']);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+
+        // Execute CURL request
+        $json = curl_exec($curl);
+
+        // Get HTTP status code
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // Close CURL
+        curl_close($curl);
+
+        // Handle errors
+        if (!$json) {
+            trigger_error('Request failed with HTTP code: ' . $code);
+            return false;
+        }
+
+        // Return the data object
+        return json_decode($json);
+    }
+
+    /**
+     * HTTP POST
+     *
+     * @param string $url - the url to query
+     * @param array $params - the POST data to send
+     * @return object - the response data
+     */
+    protected function postData($token, $url, $params = [])
+    {
+        // Init CURL
+        $curl = curl_init(BASE_URL . $url);
+
+        // Set CURL options
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $token, 'Content-type: application/json', 'Sforce-Auto-Assign: FALSE']);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+
+        // Execute CURL request
+        $json = curl_exec($curl);
+
+        // Get HTTP status code
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // Close CURL
+        curl_close($curl);
+
+        // Handle errors
+        if (!$json) {
+            trigger_error('Request failed with HTTP code: ' . $code);
+            return false;
+        }
+
+        // Return the data object
+        return json_decode($json);
+    }
+
+    /**
+     * HTTP PATCH (update)
+     *
+     * @param string $token - the access token
+     * @param string $url - the url to query
+     * @param array $params - the POST data to send
+     * @return object - the response data
+     */
+    protected function patchData($token, $url, $params = [])
+    {
+        // Init CURL
+        $curl = curl_init(BASE_URL . $url);
+
+        // Set CURL options
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $token, 'Content-type: application/json']);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+
+        // Execute CURL request
+        $json = curl_exec($curl);
+
+        // Get HTTP status code
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // Close CURL
+        curl_close($curl);
+
+        // Handle errors
+        if (!$json) {
+            // If no content (204), then update is successful - return success message
+            if ($code == '204') {
+                return json_decode('{"id":"' . substr($url, strrpos($url, '/') + 1) . '","status":"Record updated.","Record":' . json_encode($params) . '}');
+            }
+
+            // Utter failure (not a 204 code)
+            trigger_error('Request failed with HTTP code: ' . $code);
+            return false;
+        }
+
+        // Return the data object
+        return json_decode($json);
+    }
+
+    /**
+     * HTTP DELETE
+     *
+     * @param string $token - the access token
+     * @param string $url - the url to query
+     * @param array $params - the POST data to send
+     * @return object - the response data
+     */
+    protected function deleteData($token, $url, $params = [])
+    {
+        // Init CURL
+        $curl = curl_init(BASE_URL . $url);
+
+        // Set CURL options
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $token, 'Content-type: application/json']);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+
+        // Execute CURL request
+        $json = curl_exec($curl);
+
+        // Get HTTP status code
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // Close CURL
+        curl_close($curl);
+
+        // Handle errors
+        if (!$json) {
+            // If no content (204), then update is successful - return success message
+            if ($code == '204') {
+                return json_decode('{"id":"' . substr($url, strrpos($url, '/') + 1) . '","status":"Record updated.","Record":' . json_encode($params) . '}');
+            }
+
+            // Utter failure (not a 204 code)
+            trigger_error('Request failed with HTTP code: ' . $code);
+            return false;
+        }
+
+        // Return the data object
+        return json_decode($json);
+    }
+}
