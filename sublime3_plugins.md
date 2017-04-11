@@ -1,4 +1,4 @@
-# Packages
+# Packages to install:
 - Package Control
 - Laravel Blade Highlighter
 - phpfmt
