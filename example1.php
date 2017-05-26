@@ -1,3 +1,4 @@
+
 <script>
   var subtypes1 = ["Blue", "Red"];
   var subtypes2 = ["Yellow", "Green"];
@@ -35,3 +36,4 @@
     <select name="subtype_id[]" class="subtype_id">
     </select>
 </div>
+
