@@ -1,5 +1,3 @@
-<html>
-<head>
 <script>
   var subtypes1 = ["Blue", "Red"];
   var subtypes2 = ["Yellow", "Green"];
@@ -24,20 +22,16 @@
     }
   }
 </script>
-</head>
 
-<body>
-  <div class="type_div">
-      Widget Type:
-      <select name="type_id[]" onchange="toggleSubtype(this)">
-          <option></option>
-          <option value="1">Consumer</option>
-          <option value="2">Business</option>
-      </select>
+<div class="type_div">
+    Widget Type:
+    <select name="type_id[]" onchange="toggleSubtype(this)">
+        <option></option>
+        <option value="1">Consumer</option>
+        <option value="2">Business</option>
+    </select>
 
-      Widget Subtype:
-      <select name="subtype_id[]" class="subtype_id">
-      </select>
-  </div>
-</body>
-</html>
+    Widget Subtype:
+    <select name="subtype_id[]" class="subtype_id">
+    </select>
+</div>
